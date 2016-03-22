@@ -6,7 +6,8 @@ if [ -e /etc/redhat-release ] && [ "$1" == "grow" ] ; then
 
     # https://ma.ttias.be/increase-a-vmware-disk-size-vmdk-formatted-as-linux-lvm-without-rebooting/
     # http://superuser.com/questions/332252/creating-and-formating-a-partition-using-a-bash-script
-    fdisk /dev/sda <<EOF
+    if [ ! -e fdisk_done ]; then
+        fdisk /dev/sda <<EOF
 n
 p
 3
@@ -17,6 +18,10 @@ t
 8e
 w
 EOF
+        touch fdisk_done
+        reboot
+    fi
+
     pvcreate /dev/sda3
     vlg=$(vgdisplay | grep 'VG Name'| sed 's/[[:space:]]//g' | sed 's/VGName//')
     vgextend $vlg /dev/sda3
@@ -28,12 +33,13 @@ fi
 
 
 
-if [ isOSX ]; then
+if [[ "$OSTYPE" == "darwin"* ]]; then
     # On the HOST
 
     if [ "$1" == "vb" ]; then
 
         vagrant halt
+
         # http://stackoverflow.com/questions/11659005/how-to-resize-a-virtualbox-vmdk-file
 
         buildvm=`ls ~/VirtualBox\ VMs/ | grep $(basename $(pwd))`
@@ -45,6 +51,8 @@ if [ isOSX ]; then
         echo "# Manually remove old HD (*disk1.vmdk) and then new HD (*disk_1.vmdk)"
 
     elif [ "$1" == "vm" ]; then
+
+        vagrant halt
 
         "/Applications/VMware Fusion.app/Contents/Library/vmware-vdiskmanager" -x 240Gb .vagrant/machines/default/vmware_fusion/*-*-*-*-*/disk.vmdk
 
