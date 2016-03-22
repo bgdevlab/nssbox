@@ -1,0 +1,17 @@
+{
+  "name": "bgdevlab/nssbox",
+  "description": "The scripts that build the bgdevlab development environment.",
+  "authors": [
+    {
+      "name": "theodson",
+      "email": "theodson@gmail.com"
+    }
+  ],
+  "minimum-stability": "dev",
+  "extra": {
+    "branch-alias": {
+      "dev-master": "2.0.x-dev",
+      "dev-os/5": "1.0.x-dev"
+    }
+  }
+}
