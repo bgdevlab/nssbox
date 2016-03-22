@@ -64,6 +64,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provision 'shell', path: './provision/install.linux.core.sh'
   config.vm.provision 'shell', path: './provision/configure.security.sh'
   config.vm.provision 'shell', path: './provision/install.apache.sh'
+  config.vm.provision 'shell', path: './provision/install.postgres.sh'
   config.vm.provision 'shell', path: './provision/install.php-5.4.sh'
   config.vm.provision 'shell', path: './provision/install.scm.sh'
   config.vm.provision :reload
