@@ -1,0 +1,7 @@
+/.idea/
+/.vagrant/
+/scratch/
+/virtualbox-build-output.log
+/virtualbox.box
+/vmware-build-output.log
+/vmware_fusion.box
