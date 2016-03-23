@@ -31,7 +31,7 @@ EOF
 
 fi
 
-
+hddsize=120
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
     # On the HOST
@@ -52,25 +52,23 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
         ls "$buildhdd_path"
 
         VBoxManage clonehd "${buildhdd_path}" "cloned.vdi" --format vdi
-        VBoxManage modifyhd "cloned.vdi" --resize 286720
+        VBoxManage modifyhd "cloned.vdi" --resize "$((1024 * $hddsize))"
 
         # remove original DISK from VM and archive it just in case.
         VBoxManage storageattach "${buildvm_id}" --medium none --storagectl "SATA Controller" --port 0
 
         VBoxManage closemedium disk ${buildhdd_uuid}
-        mv ${buildhdd_path} ${buildhdd_path}_original
+        mv "${buildhdd_path}" "${buildhdd_path}_original"
 
         VBoxManage clonehd cloned.vdi "${buildhdd_path}" --format vmdk
         # Attach newly resized HD
         VBoxManage storageattach "${buildvm_id}" --medium "${buildhdd_path}" --storagectl "SATA Controller" --port 0 --type hdd
 
-        echo "# Manually remove old HD (*disk1.vmdk) and then new HD (*disk_1.vmdk)"
-
     elif [ "$1" == "vm" ]; then
 
         vagrant halt
 
-        "/Applications/VMware Fusion.app/Contents/Library/vmware-vdiskmanager" -x 240Gb .vagrant/machines/default/vmware_fusion/*-*-*-*-*/disk.vmdk
+        "/Applications/VMware Fusion.app/Contents/Library/vmware-vdiskmanager" -x ${hddsize}Gb .vagrant/machines/default/vmware_fusion/*-*-*-*-*/disk.vmdk
 
     fi
 
