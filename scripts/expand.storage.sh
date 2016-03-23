@@ -42,11 +42,27 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 
         # http://stackoverflow.com/questions/11659005/how-to-resize-a-virtualbox-vmdk-file
 
-        buildvm=`ls ~/VirtualBox\ VMs/ | grep $(basename $(pwd))`
-        pushd ~/VirtualBox\ VMs/${buildvm}
-        VBoxManage clonehd *.vmdk "cloned.vdi" --format vdi
+        buildvm_id=$(echo $(VBoxManage list vms | grep $(cat .vagrant/machines/default/virtualbox/id)) | cut -d '"' -f 2)
+        buildhdd_uuid=$(VBoxManage list hdds | grep -F5 $buildvm_id | grep '^UUID'|cut -d ':' -f 2- | sed 's/ //g')
+        buildhdd_path=/$(VBoxManage list hdds | grep -F5 $buildvm_id | grep '^Location'|cut -d '/' -f 2- )
+
+        pushd ~/VirtualBox*VMs/${buildvm_id}
+        echo -e "buildvm_id    : ${buildvm_id}\nbuildhdd_uuid : ${buildhdd_uuid}\nbuildhdd_path : ${buildhdd_path}"
+
+        ls "$buildhdd_path"
+
+        VBoxManage clonehd "${buildhdd_path}" "cloned.vdi" --format vdi
         VBoxManage modifyhd "cloned.vdi" --resize 286720
-        VBoxManage clonehd cloned.vdi centos-7.2-x86_64-disk_1.vmdk --format vmdk
+
+        # remove original DISK from VM and archive it just in case.
+        VBoxManage storageattach "${buildvm_id}" --medium none --storagectl "SATA Controller" --port 0
+
+        VBoxManage closemedium disk ${buildhdd_uuid}
+        mv ${buildhdd_path} ${buildhdd_path}_original
+
+        VBoxManage clonehd cloned.vdi "${buildhdd_path}" --format vmdk
+        # Attach newly resized HD
+        VBoxManage storageattach "${buildvm_id}" --medium "${buildhdd_path}" --storagectl "SATA Controller" --port 0 --type hdd
 
         echo "# Manually remove old HD (*disk1.vmdk) and then new HD (*disk_1.vmdk)"
 
