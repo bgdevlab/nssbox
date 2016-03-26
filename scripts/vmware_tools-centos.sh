@@ -5,8 +5,8 @@ update_vmware_tools() {
 
     echo "[vmware_tools] update and install : START"
 
-    yum -y group install 'Development Tools'
     yum -y install perl kernel-headers gcc
+    yum -y group install 'Development Tools'
 
     # Upgrade the VMWare tools if iso is supplied.
     mkdir -p /tmp/vmfusion;
@@ -24,10 +24,11 @@ update_vmware_tools() {
     echo "answer AUTO_KMODS_ENABLED yes" | tee -a /etc/vmware-tools/locations || true
 }
 
-yum -y install virt-what
+yum -y install dmidecode
+
 
 # check we are running in vmware.
-virt-what | grep 'vmware'
+dmidecode -s system-product-name | grep -i 'vmware'
 if [ $? -eq 0 ]; then
     if [ -e $HOME_DIR/linux.iso ]; then
         # lets upgrade
@@ -38,6 +39,7 @@ if [ $? -eq 0 ]; then
         # this might fix it - http://dantehranian.wordpress.com/2014/08/19/vagrant-vmware-resolving-waiting-for-hgfs-kernel-module-timeouts/
         echo "answer AUTO_KMODS_ENABLED yes" | tee -a /etc/vmware-tools/locations || true
 
+        yum -y install perl kernel-headers gcc
         /usr/bin/vmware-config-tools.pl -d || true
     fi
 fi

@@ -39,11 +39,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   if Vagrant.has_plugin?("vagrant-vbguest")
     config.vbguest.auto_update = true
-    config.vm.provision 'shell', inline: "sudo yum -y install kernel-devel gcc"
   end
 
   # Run The Base Provisioning Script
+  config.vm.provision 'shell', path: './scripts/virtualbox_tools-centos.sh'
   config.vm.provision 'shell', path: './scripts/update-centos.sh'
+  config.vm.provision 'shell', path: './scripts/vmware_tools-centos.sh'
   config.vm.provision :reload
 
   config.vm.provision 'shell', path: './provision/install.yum-repo.sh'
@@ -63,6 +64,5 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provision 'shell', path: './provision/install.activemq.sh'
   config.vm.provision :reload
 
-  config.vm.provision 'shell', path: './scripts/vmware_tools-centos.sh'
-  config.vm.provision :reload
+
 end
