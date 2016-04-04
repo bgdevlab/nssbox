@@ -54,11 +54,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provision 'shell', path: './provision/install.postgres.sh'
   config.vm.provision 'shell', path: './provision/install.php-5.4.sh'
   config.vm.provision 'shell', path: './provision/install.scm.sh'
-  config.vm.provision :reload
 
   config.vm.provision 'shell', path: './provision/install.jdk8.sh'
   config.vm.provision 'shell', path: './provision/install.composer.sh'
-  config.vm.provision :reload
 
   config.vm.provision 'shell', path: './provision/install.tomcat.sh'
   config.vm.provision 'shell', path: './provision/install.activemq.sh'

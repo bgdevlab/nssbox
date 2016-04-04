@@ -39,6 +39,10 @@ if [ $? -eq 0 ]; then
         # this might fix it - http://dantehranian.wordpress.com/2014/08/19/vagrant-vmware-resolving-waiting-for-hgfs-kernel-module-timeouts/
         echo "answer AUTO_KMODS_ENABLED yes" | tee -a /etc/vmware-tools/locations || true
 
+        # Ensure that VMWare Tools recompiles kernel modules when we update the linux images
+        sed -i.bak 's/answer AUTO_KMODS_ENABLED_ANSWER no/answer AUTO_KMODS_ENABLED_ANSWER yes/g' /etc/vmware-tools/locations
+        sed -i 's/answer AUTO_KMODS_ENABLED no/answer AUTO_KMODS_ENABLED yes/g' /etc/vmware-tools/locations
+
         yum -y install perl kernel-headers gcc
         /usr/bin/vmware-config-tools.pl -d || true
     fi
