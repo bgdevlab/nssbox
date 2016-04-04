@@ -57,6 +57,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.provision 'shell', path: './provision/install.jdk8.sh'
   config.vm.provision 'shell', path: './provision/install.composer.sh'
+  config.vm.provision 'shell', path: './provision/install.jdk6.sh'
 
   config.vm.provision 'shell', path: './provision/install.tomcat.sh'
   config.vm.provision 'shell', path: './provision/install.activemq.sh'
