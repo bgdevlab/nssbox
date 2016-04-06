@@ -1,37 +1,57 @@
 #!/usr/bin/env bash
 # see https://gist.github.com/theodson/ed84e9c80c97ca8af53a
 
-time curl https://gist.githubusercontent.com/theodson/ed84e9c80c97ca8af53a/raw/adc9c8188cadd7baff126a329d18858953294ab9/getOracleJDK.sh | bash -s "rpm" "6" 2>/dev/null \
-    && yum -y localinstall --nogpgcheck jdk-6u*-linux-x64*rpm* \
-    && rm -f jdk-6u*-linux-x64*rpm*
+function download_install_jdk() {
+    # get the Oracle JDK
+    time curl https://gist.githubusercontent.com/theodson/ed84e9c80c97ca8af53a/raw/adc9c8188cadd7baff126a329d18858953294ab9/getOracleJDK.sh | bash -s "rpm" "6" 2>/dev/null \
+        && echo "Download JDK6 complete" \
+        && chmod +x jdk-6u*-linux-x64*rpm* \
+        && sudo ./jdk-6u*-linux-x64*rpm.bin
+    jdk_dir=$(basename /usr/java/jdk1.6*)
+    sudo rm -f /usr/java/default
+    sudo ln -s "/usr/java/jdk1.6*" /usr/java/default
+}
+
+function configure_alternatives() {
+    priority=65
+
+    jdk_dir=$(basename /usr/java/jdk1.6*)
+
+    for cmd in javac javadoc jar
+    do
+        #echo "configuring ${cmd} against ${jdk_dir}"
+
+        [ -e /etc/alternatives/${cmd} ] && rm -f /etc/alternatives/${cmd}
+        ln -s  "/usr/java/${jdk_dir}/bin/${cmd}" /etc/alternatives/
+
+        [ -e /usr/bin/${cmd} ] && rm -f /usr/bin/${cmd}
+        ln -s  "/usr/java/default/bin/${cmd}" /usr/bin/
+        /usr/sbin/alternatives --install /usr/bin/${cmd} ${cmd} /usr/java/${jdk_dir}/bin/${cmd} $priority
+        /usr/sbin/alternatives --set ${cmd} /usr/java/${jdk_dir}/bin/${cmd}
+
+    done
+
+    for cmd in java javaws jcontrol
+    do
+        #echo "configuring ${cmd} for jre against ${jdk_dir}"
+
+        [ -e /etc/alternatives/${cmd} ] && rm -f /etc/alternatives/${cmd}
+        ln -s  "/usr/java/${jdk_dir}/jre/bin/$cmd" /etc/alternatives/$cmd
+
+        [ -e /usr/bin/${cmd} ] && rm -f /usr/bin/${cmd}
+        ln -s  "/usr/java/default/jre/bin/$cmd" /usr/bin/$cmd
+
+        sudo /usr/sbin/alternatives --install /usr/bin/${cmd} ${cmd} /usr/java/${jdk_dir}/jre/bin/${cmd} $priority
+        sudo /usr/sbin/alternatives --set ${cmd} /usr/java/${jdk_dir}/jre/bin/${cmd}
+    done
+
+    #rm -f /etc/alternatives/{java,javac,jar,javadoc,javaws,jcontrol} /usr/bin/{java,javac,jar,javadoc,javaws,jcontrol}
+}
 
 
-sudo rm -f /usr/java/default
-sudo ln -s /usr/java/jdk1.6* /usr/java/default
+download_install_jdk
+configure_alternatives
 
-priority=65
-
-## java ##
-sudo -i /usr/sbin/alternatives --install /usr/bin/java java /usr/java/jdk1.6.0_*/jre/bin/java $priority
-sudo -i /usr/sbin/alternatives --set java /usr/java/jdk1.6.0_*/jre/bin/java
-
-## javaws ##
-sudo -i /usr/sbin/alternatives --install /usr/bin/javaws javaws /usr/java/jdk1.6.0_*/jre/bin/javaws $priority
-sudo -i /usr/sbin/alternatives --set javaws /usr/java/jdk1.6.0_*/jre/bin/javaws
-
-## jcontrol
-sudo -i /usr/sbin/alternatives --install /usr/bin/jcontrol jcontrol /usr/java/jdk1.6.0_*/jre/bin/jcontrol $priority
-sudo -i /usr/sbin/alternatives --set jcontrol /usr/java/jdk1.6.0_*/jre/bin/jcontrol
-
-## javadoc
-sudo -i /usr/sbin/alternatives --install /usr/bin/javadoc javadoc /usr/java/jdk1.6.0_*/bin/javadoc $priority
-sudo -i /usr/sbin/alternatives --set javadoc /usr/java/jdk1.6.0_*/bin/javadoc
-
-## Install javac only if you installed JDK (Java Development Kit) package ##
-sudo -i /usr/sbin/alternatives --install /usr/bin/javac javac /usr/java/jdk1.6.0_*/bin/javac $priority
-sudo -i /usr/sbin/alternatives --set javac /usr/java/jdk1.6.0_*/bin/javac
-
-sudo -i /usr/sbin/alternatives --install /usr/bin/jar jar /usr/java/jdk1.6.0_*/bin/jar $priority
-sudo -i /usr/sbin/alternatives --set jar /usr/java/jdk1.6.0_*/bin/jar
+ls -l /etc/alternatives/j* /usr/bin/j*
 
 rm -f jdk-6u*.rpm jdk-6u*.bin sun-javadb-*
