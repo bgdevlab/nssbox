@@ -9,7 +9,7 @@ function download_install_jdk() {
         && sudo ./jdk-6u*-linux-x64*rpm.bin
     jdk_dir=$(basename /usr/java/jdk1.6*)
     sudo rm -f /usr/java/default
-    sudo ln -s "/usr/java/jdk1.6*" /usr/java/default
+    sudo ln -s "/usr/java/${jdk_dir}" /usr/java/default
 }
 
 function configure_alternatives() {
