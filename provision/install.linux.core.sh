@@ -20,7 +20,8 @@ installCore() {
     lognow "installing yum standard packages"
     yum install -y openconnect \
         perl-DBI perl-DBD-Pg ntp nmap gcc sendmail sendmail-cf m4 telnet dos2unix vim-enhanced \
-        curl curl-devel gcc gcc-c++ autoconf automake mutt yum-downloadonly yum-utils mlocate htop man
+        curl curl-devel gcc gcc-c++ autoconf automake mutt yum-downloadonly yum-utils mlocate htop man \
+        setuptool system-config-network*  system-config-firewall* system-config-securitylevel-tui  system-config-keyboard ntsysv
 
     lognow "install ntpd service"
     /sbin/chkconfig ntpd on
