@@ -19,16 +19,17 @@ t
 w
 EOF
         touch fdisk_done
-        reboot
+        exit
     fi
 
-    pvcreate /dev/sda3
+    pvcreate /dev/sda4
     vlg=$(vgdisplay | grep 'VG Name'| sed 's/[[:space:]]//g' | sed 's/VGName//')
-    vgextend $vlg /dev/sda3
+    vgextend $vlg /dev/sda4
     pvscan
-    lvextend /dev/${vlg}/LogVol00 /dev/sda3
+    lvextend /dev/${vlg}/LogVol00 /dev/sda4
     resize2fs /dev/${vlg}/LogVol00
-
+    rm -f fdisk_done
+    df -h
 fi
 
 hddsize=120
