@@ -21,7 +21,8 @@ installCore() {
     yum install -y openconnect \
         perl-DBI perl-DBD-Pg ntp nmap gcc sendmail sendmail-cf m4 telnet dos2unix vim-enhanced \
         curl curl-devel gcc gcc-c++ autoconf automake mutt yum-downloadonly yum-utils mlocate htop man nano \
-        setuptool system-config-network*  system-config-firewall* system-config-securitylevel-tui  system-config-keyboard ntsysv bind-utils
+        setuptool system-config-network*  system-config-firewall* system-config-securitylevel-tui  system-config-keyboard ntsysv bind-utils \
+        tree traceroute
 
     lognow "install ntpd service"
     /sbin/chkconfig ntpd on

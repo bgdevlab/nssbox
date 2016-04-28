@@ -2,11 +2,28 @@
 
 The scripts that build the bgdevlab development environment.
 
+
+
 | Release     | Branch    | CentOS Version  |
 | ----------- | --------- | --------------- |
 | 1.0         | os/5      | CentOS 5.x      |
 | 2.0         | master    | CentOS 6.x      |
 
+## Included Software
+
+* CentOS 5.11
+* Git
+* PHP 5.x.45
+* Apache 2.2.x
+* Postgresql 8.1
+* Composer
+* Phing 2.14
+* Tomcat 6.0.18
+* ActiveMQ 5.10.2
+* Java 1.6.0_45
+* Java 1.8.0_73
+
+## Build
 
 ## 1. Build Box
 Build environment is OSX.
